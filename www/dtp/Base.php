@@ -36,6 +36,6 @@ class Base {
       return null;
     }
 
-    return DailyStats::make(strtotime($result['date']), (int)$result['accidents'], (int)$result['deaths'], (int)$result['child_deaths'], (int)$result['injured'], (int)$result['child_injured']);
+    return DailyStats::make((int)$result['accidents'], (int)$result['deaths'], (int)$result['child_deaths'], (int)$result['injured'], (int)$result['child_injured'], strtotime($result['date']));
   }
 }
