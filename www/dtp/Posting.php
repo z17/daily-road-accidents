@@ -2,6 +2,7 @@
 
 namespace dtp;
 
+use dtp\data\DailyStats;
 use VK\Client\VKApiClient;
 use VK\Exceptions\VKClientException;
 use VK\Exceptions\VKOAuthException;
@@ -49,6 +50,7 @@ class Posting {
 TXT;
   }
 
+  /** @noinspection PhpUnusedPrivateMethodInspection */
   private static function authGetAccessToken() {
 //    $link_to_get_code = 'https://oauth.vk.com/authorize?client_id=CLIEND_ID&display=page&redirect_uri=https://vk.com/test&scope=wall,offline&response_type=code&v=5.124';
     $oauth = new VKOAuth();
@@ -66,6 +68,7 @@ TXT;
     echo $access_token;
   }
 
+  /** @noinspection PhpUnusedPrivateMethodInspection */
   private static function authGetCodeByState() {
     $oauth = new VKOAuth();
     $client_id = Config::CLIENT_ID;

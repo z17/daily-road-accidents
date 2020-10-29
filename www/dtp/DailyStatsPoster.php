@@ -3,6 +3,7 @@
 namespace dtp;
 
 class DailyStatsPoster {
+
   /** @var bool */
   private $debug_mode;
 
@@ -21,6 +22,9 @@ class DailyStatsPoster {
     if (!$daily_stats) {
       return false;
     }
+
+    $base = new Base();
+    $base->insert($daily_stats);
 
     $posting = new Posting($daily_stats);
     return $posting->post();

@@ -1,6 +1,6 @@
 <?php
 
-namespace dtp;
+namespace dtp\data;
 
 class DailyStats {
   /**

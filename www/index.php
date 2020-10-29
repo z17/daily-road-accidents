@@ -1,16 +1,20 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once 'autoload.php';
 
-use dtp\DailyStatsPoster;
+use dtp\Stats;
 
-spl_autoload_register(function($name) {
-  $fileParts = explode('\\', $name);
-  $filePath = implode('/', $fileParts) . '.php';
-  /** @noinspection PhpIncludeInspection */
-  require_once $filePath;
-});
+header('Access-Control-Allow-Origin: *');
 
+$path = isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '';
 
-$parser = new DailyStatsPoster(true);
-$parser->process();
+switch ($path) {
+  case '/stats/':
+    $stats = new Stats();
+    echo json_encode($stats->getLastStats());
+    exit;
+  default:
+    header("HTTP/1.0 404 Not Found");
+    echo 404;
+    exit;
+}
