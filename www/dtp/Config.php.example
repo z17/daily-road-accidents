@@ -1,0 +1,10 @@
+<?php
+
+namespace dtp;
+
+class Config {
+  const CLIENT_ID = '';
+  const OWNER_ID = '';
+  const CLIENT_SECRET = '';
+  const ACCESS_TOKEN = '';
+}
