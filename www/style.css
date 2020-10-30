@@ -359,7 +359,7 @@ body {
   position: relative;
   overflow: hidden;
   padding: 40px 15px 30px;
-  background: url('./media/accident.jpg') no-repeat center center;
+  background: url('media/accident.jpg') no-repeat center center;
   background-size: cover;
 }
 
