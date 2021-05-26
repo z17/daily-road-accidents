@@ -45,8 +45,8 @@ class Posting {
 Всего ДТП: {$this->stats->accidents}
 Погибли: {$this->stats->deaths}
 Ранены: {$this->stats->injured}
-Погибли детей: {$this->stats->child_deaths}
-Ранены детей: {$this->stats->deaths}
+Погибло детей: {$this->stats->child_deaths}
+Ранено детей: {$this->stats->deaths}
 TXT;
   }
 
