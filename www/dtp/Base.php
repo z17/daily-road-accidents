@@ -25,17 +25,43 @@ class Base {
     $sql->execute();
   }
 
-  public function getLast() : ?DailyStats {
+  public function getLast(): ?DailyStats {
     $query = "SELECT `date`, accidents, deaths, child_deaths, injured, child_injured FROM daily_stats ORDER BY ID DESC LIMIT 1";
 
     $sql = $this->base->prepare($query);
     $sql->execute();
-    $result = $sql->fetch();
+    $result = $sql->fetch(PDO::FETCH_ASSOC);
 
     if (!$result) {
       return null;
     }
 
-    return DailyStats::make((int)$result['accidents'], (int)$result['deaths'], (int)$result['child_deaths'], (int)$result['injured'], (int)$result['child_injured'], strtotime($result['date']));
+    return $this->parseDailyStats($result);
+  }
+
+  /**
+   * @return DailyStats[]
+   */
+  public function getMonthStats(int $month, int $year): array {
+    $query = "SELECT `date`, accidents, deaths, child_deaths, injured, child_injured FROM daily_stats WHERE MONTH(`date`) = :month AND YEAR(`date`) = :year ORDER BY ID DESC";
+    $sql = $this->base->prepare($query);
+    $sql->bindParam(':month', $month);
+    $sql->bindParam(':year', $year);
+    $sql->execute();
+    $result = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+    if (!$result) {
+      return [];
+    }
+
+    $monthly_days = [];
+    foreach ($result as $record) {
+      $monthly_days[] = $this->parseDailyStats($record);
+    }
+    return $monthly_days;
+  }
+
+  private function parseDailyStats($record): DailyStats {
+    return DailyStats::make((int)$record['accidents'], (int)$record['deaths'], (int)$record['child_deaths'], (int)$record['injured'], (int)$record['child_injured'], strtotime($record['date']));
   }
 }

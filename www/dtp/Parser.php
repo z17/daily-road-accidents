@@ -8,7 +8,7 @@ use dtp\data\DailyStats;
 class Parser {
 
   /** @var bool */
-  private $debug_mode = false;
+  private $debug_mode;
 
   /**
    * @param bool $debug_mode

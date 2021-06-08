@@ -10,7 +10,7 @@ class DailyStatsPoster {
   /**
    * @param bool $debug_mode
    */
-  public function __construct(bool $debug_mode) {
+  public function __construct(bool $debug_mode = false) {
     $this->debug_mode = $debug_mode;
   }
 
@@ -26,7 +26,7 @@ class DailyStatsPoster {
     $base = new Base();
     $base->insert($daily_stats);
 
-    $posting = new Posting($daily_stats);
-    return $posting->post();
+    $posting = new Posting();
+    return $posting->postDailyStats($daily_stats);
   }
 }

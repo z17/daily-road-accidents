@@ -3,7 +3,9 @@
 namespace dtp;
 
 use dtp\data\DailyStats;
+use dtp\data\MonthlyStats;
 use VK\Client\VKApiClient;
+use VK\Exceptions\VKApiException;
 use VK\Exceptions\VKClientException;
 use VK\Exceptions\VKOAuthException;
 use VK\OAuth\Scopes\VKOAuthUserScope;
@@ -13,41 +15,86 @@ use VK\OAuth\VKOAuthResponseType;
 
 class Posting {
 
-  /** @var DailyStats */
-  private $stats;
+  /** @var VKApiClient */
+  private $vk;
 
-  /**
-   * @param DailyStats $stats
-   */
-  public function __construct(DailyStats $stats) {
-    $this->stats = $stats;
+  public function __construct() {
+    $this->vk = new VKApiClient();
   }
 
-
-  public function post(): bool {
-    $vk = new VKApiClient();
-
-    $text = $this->getText();
-    $vk->wall()->post(Config::ACCESS_TOKEN,
-      [
-        'owner_id'   => Config::OWNER_ID,
-        'from_group' => true,
-        'message'    => $text,
-      ]);
+  public function postDailyStats(DailyStats $stats): bool {
+    $text = $this->getDailyText($stats);
+    try {
+      $this->vk->wall()->post(Config::ACCESS_TOKEN,
+        [
+          'owner_id'   => Config::OWNER_ID,
+          'from_group' => true,
+          'message'    => $text,
+        ]);
+    } catch (VKApiException | VKClientException $e) {
+      return false;
+    }
 
     return true;
   }
 
-  private function getText(): string {
-    $date = date('d.m.Y', $this->stats->date);
+  public function postMonthlyStats(MonthlyStats $stats): bool {
+    $text = $this->getMonthlyText($stats);
+    try {
+      $this->vk->wall()->post(Config::ACCESS_TOKEN,
+        [
+          'owner_id'   => Config::OWNER_ID,
+          'from_group' => true,
+          'message'    => $text,
+        ]);
+    } catch (VKApiException | VKClientException $e) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private function getDailyText(DailyStats $stats): string {
+    $date = date('d.m.Y', $stats->date);
     return <<<TXT
-ДТП в России за {$date}
-Всего ДТП: {$this->stats->accidents}
-Погибли: {$this->stats->deaths}
-Ранены: {$this->stats->injured}
-Погибло детей: {$this->stats->child_deaths}
-Ранено детей: {$this->stats->deaths}
+ДТП в России за $date
+Всего ДТП: $stats->accidents
+Погибли: $stats->deaths
+Ранены: $stats->injured
+Погибло детей: $stats->child_deaths
+Ранено детей: $stats->deaths
 TXT;
+  }
+
+  private function getMonthlyText(MonthlyStats $stats): string {
+    $month = $this->convertMonthNames($stats->month);
+    return <<<TXT
+$month $stats->year: Статистика за месяц 
+Всего ДТП: $stats->accidents
+Погибли: $stats->deaths
+Ранены: $stats->injured
+Погибло детей: $stats->child_deaths
+Ранено детей: $stats->deaths
+
+TXT;
+  }
+
+  private function convertMonthNames(int $month): string {
+    $map = [
+      1  => 'Январь',
+      2  => 'Февраль',
+      3  => 'Март',
+      4  => 'Апрель',
+      5  => 'Май',
+      6  => 'Июнь',
+      7  => 'Июль',
+      8  => 'Август',
+      9  => 'Сентябрь',
+      10 => 'Октябрь',
+      11 => 'Ноябрь',
+      12 => 'Декабрь',
+    ];
+    return $map[$month];
   }
 
   /** @noinspection PhpUnusedPrivateMethodInspection */
@@ -61,8 +108,8 @@ TXT;
 
     try {
       $response = $oauth->getAccessToken($client_id, $client_secret, $redirect_uri, $code);
-    } catch (VKClientException $e) {
-    } catch (VKOAuthException $e) {
+    } catch (VKClientException | VKOAuthException $e) {
+      return;
     }
     $access_token = $response['access_token'];
     echo $access_token;
@@ -77,7 +124,7 @@ TXT;
     $scope = [VKOAuthUserScope::WALL];
     $state = '';
 
-    $browser_url = $oauth->getAuthorizeUrl(VKOAuthResponseType::CODE, $client_id, $redirect_uri, $display, $scope, $state);
+    echo $oauth->getAuthorizeUrl(VKOAuthResponseType::CODE, $client_id, $redirect_uri, $display, $scope, $state);
   }
 
 }
