@@ -20,7 +20,7 @@ class Parser {
   public function parse(): ?DailyStats {
     $file = $this->loadFile();
     $matches = [];
-    preg_match("/<table class=\"b-crash-stat\">(.*?)<\/div>/s", $file, $matches);
+    preg_match("/<table class=\"b-crash-stat\">(.*?)<\/table>/s", $file, $matches);
     $table = $matches[0];
 
     $dom = new DOMDocument;
